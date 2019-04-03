@@ -1,5 +1,7 @@
-
+let canvas;
+let ctx;
 let speed = 12;
+let direction = null;
 
 window.onload = function() {
   let info = document.getElementById('info');
@@ -64,24 +66,37 @@ function game() {
   info.innerHTML = `Score: ${score} High Score: ${highScore}`;
 } //end game()
 
+
 //handle key presses
 function keyPush(event) {
   switch(event.keyCode) {
     case 37: //Left arrow
-      velocityX = -1;
-      velocityY = 0;
+      if (direction !== 'right') {
+        direction = 'left';
+        velocityX = -1;
+        velocityY = 0;
+      }
       break;
     case 38: //Up arrow
-      velocityX = 0;
-      velocityY = -1;
+      if (direction !== 'down') {
+        direction = 'up'
+        velocityX = 0;
+        velocityY = -1;
+      }
       break;
     case 39: //Right arrow
-      velocityX = 1;
-      velocityY = 0;
+      if (direction !== 'left') {
+        direction = 'right'
+        velocityX = 1;
+        velocityY = 0;
+      }
       break;
     case 40: //Down arrow
-      velocityX = 0;
-      velocityY = 1;
+      if (direction !== 'up') {
+        direction = 'down';
+        velocityX = 0;
+        velocityY = 1;
+      }
       break;
   } //end switch
 } //end keyPush()
