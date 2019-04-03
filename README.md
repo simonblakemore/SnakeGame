@@ -2,8 +2,8 @@
 
 ## Roadmap
 
--[ ] Prevent self eating by trying to move in opposite direction.
-    -[ ] Disable relevant key input.
+- [ ] Prevent self eating by trying to move in opposite direction.
+    - [ ] Disable relevant key input.
 2. Create *'Game Start'* and *'Game Over'* states.
 3. Add local storage for *High Score* and future data.
 4. Make layout responsive to screen sizes.
