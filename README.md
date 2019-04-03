@@ -2,7 +2,7 @@
 
 ## Roadmap
 
-- [ ] Prevent self eating by trying to move in opposite direction.
+- [x] Prevent self eating by trying to move in opposite direction.
     - [ ] Disable relevant key input.
 - [ ] Create *'Game Start'* and *'Game Over'* states.
 - [ ] Add local storage for *High Score* and future data.
