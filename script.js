@@ -1,7 +1,7 @@
 let canvas;
 let ctx;
-let speed = 12;
-let direction = 'down';
+let speed = 10;
+let direction = 'null';
 let gameState = 'start';
 
 window.onload = function() {
@@ -9,7 +9,7 @@ window.onload = function() {
   canvas = document.getElementById('game');
   ctx = canvas.getContext('2d');
   document.addEventListener('keydown', keyPush);
-  setInterval(game, 1000 / speed);
+  game = setInterval(gameControler, 1000 / 60);
 } // end window.onload
 
 
@@ -17,18 +17,18 @@ let playerX = playerY = 10;
 let gridSize = 20;
 let totalCells = 20;
 let cherryX = cherryY = 15;
-let velocityX = 0, velocityY = 1;
+let velocityX = 0, velocityY = 0;
 let trail = [];
-let initialTail = 15;
+let initialTail = 4;
 let tail = initialTail;
 let score = 0;
-let highScore = 0;
+let highScore = (localStorage.HighScore === null) ? 0 : localStorage.HighScore;
 let invulnerable = true;
 let framesPlayed = 0;
 
 
-function drawBackground() {
-  ctx.fillStyle = 'black';
+function drawBackground(color) {
+  ctx.fillStyle = color;
   ctx.fillRect(0,0, canvas.width, canvas.height);
 } //end drawBackground()
 
@@ -39,9 +39,9 @@ function drawSnake() {
     ctx.fillRect(trail[i].x * gridSize, trail[i].y * gridSize, gridSize - 2, gridSize - 2);
     //if (i = tail) playing = true;
     if (trail[i].x == playerX && trail[i].y == playerY) {
-      score = 0;
-      tail = initialTail;
-      if (invulnerable === false) gameState = 'over';
+      if (invulnerable === false) {
+        gameState = 'over';
+      }
     }
   }
 } // end drawSnake
@@ -49,16 +49,10 @@ function drawSnake() {
 function drawCherry() {
   ctx.fillStyle = 'red';
   ctx.fillRect(cherryX * gridSize,cherryY * gridSize, gridSize - 2, gridSize - 2);
-  info.innerHTML = `Score: ${score} High Score: ${highScore}`;
 } //end drawCherry()
 
-function startGame() {
-  drawBackground();
-} //end startGame()
-
 function playGame() {
-
-
+  info.innerHTML = `Score: ${score} High Score: ${highScore}`;
   // Set the direction of player movement
   playerX += velocityX;
   playerY += velocityY;
@@ -70,57 +64,83 @@ function playGame() {
   if (playerY > totalCells - 1) playerY = 0;
 
   //Draw background
-  drawBackground();
+  drawBackground('black');
 
   //Draw snake
   drawSnake();
 
+  if (gameState === 'over') {
+    clearInterval(game);
+    game = setInterval(gameControler, 1000 / 60);
+  }
 
   //Update snake position (trail array)
   trail.push({x:playerX, y:playerY});
   while(trail.length > tail) trail.shift();
 
-
-
   //Check for snake eating cherry
   if (cherryX == playerX && cherryY == playerY) {
     score++; //update score
-    if (score > highScore) highScore = score;
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("HighScore", highScore);
+    }
+
     tail++; // increase snake
    cherryX = Math.floor(Math.random() * totalCells); //reset cherry position
    cherryY = Math.floor(Math.random() * totalCells); //
+   speed++;
+   clearInterval(game);
+   game = setInterval(playGame, 1000 / speed);
   }
 
   //Draw cherry
   drawCherry();
 
-
+  if (direction !== 'null') framesPlayed++;
+  if (framesPlayed === initialTail) invulnerable = false;
 
 } //end playGame()
 
+function startGame() {
+  drawBackground('blue');
+} //end startGame()
+
 function gameOver() {
-  drawBackground();
+  score = 0;
+  tail = initialTail;
+  playerX = 10;
+  playerY = 10;
+  velocityX = 0;
+  velocityY = 0;
+  direction = 'null';
+  invulnerable = true;
+  trail = [];
+  framesPlayed = 0;
+  speed = 12;
+  drawBackground('red');
 } //end gameOver()
 
-function game() {
+function gameControler() {
 
-
-
-  if (gameState === 'start') startGame();
-  if (gameState === 'play') {
-    if (direction !== null) framesPlayed++;
-    if (framesPlayed > initialTail) invulnerable = false;
-    playGame();
+  switch(gameState) {
+    case 'start':
+      startGame();
+      break;
+    case 'over':
+      gameOver();
+      break;
+    case 'play':
+      clearInterval(game);
+      game = setInterval(playGame, 1000 / speed);
+      break;
   }
-  if (gameState === 'over') gameOver();
 
-
-} //end game()
-
+} //end gameControler()
 
 //handle key presses
 function keyPush(event) {
-  if (gameState === 'play') {
+  if (true) {
     switch(event.keyCode) {
       case 37: //Left arrow
         if (direction !== 'right') {
